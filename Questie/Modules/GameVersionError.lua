@@ -1,3 +1,5 @@
+---@class GameVersionError
+local GameVersionError = QuestieLoader:CreateModule("GameVersionError")
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 
@@ -12,20 +14,37 @@ local msg = {
     l10n("are not supported."),
 
     l10n("Questie only supports"),
-    l10n("WoW Classic (Era/Wrath)!"),
+    l10n("WoW Classic (Era/Wrath/Cata)!"),
 }
 
-StaticPopupDialogs["QUESTIE_VERSION_ERROR"] = {
-    text = "|cffff0000ERROR|r\n" .. msg[1] .. "\n" .. msg[2] .. "\n\n" .. msg[3] .. "\n" .. msg[4] .. "\n\n" .. msg[5] .. "\n" .. msg[6],
-    button2 = "OK",
-    hasEditBox = false,
-    whileDead = true
-}
+-- Check if it's a supported client version
+-- WOW_PROJECT_ID values:
+-- 1 = Classic Era
+-- 2 = Retail
+-- 3 = Wrath Classic
+-- 4 = Cataclysm
 
-StaticPopup_Show("QUESTIE_VERSION_ERROR")
+local isSupportedClient = false
+if WOW_PROJECT_ID == 1 or WOW_PROJECT_ID == 3 or WOW_PROJECT_ID == 4 then
+    isSupportedClient = true
+end
 
-DEFAULT_CHAT_FRAME:AddMessage("---------------------------------")
-DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ERROR|r: |cff42f5ad" .. msg[1] .. " " .. msg[2] .. "|r")
-DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ERROR|r: |cff42f5ad" .. msg[3] .. " " .. msg[4] .. "|r")
-DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ERROR|r: |cff42f5ad" .. msg[5] .. " " .. msg[6] .. "|r")
-DEFAULT_CHAT_FRAME:AddMessage("---------------------------------")
+-- Only show error if it's NOT a supported client
+if not isSupportedClient then
+    StaticPopupDialogs["QUESTIE_VERSION_ERROR"] = {
+        text = "|cffff0000ERROR|r\n" .. msg[1] .. "\n" .. msg[2] .. "\n\n" .. msg[3] .. "\n" .. msg[4] .. "\n\n" .. msg[5] .. "\n" .. msg[6],
+        button2 = "OK",
+        hasEditBox = false,
+        whileDead = true
+    }
+
+    StaticPopup_Show("QUESTIE_VERSION_ERROR")
+
+    DEFAULT_CHAT_FRAME:AddMessage("---------------------------------")
+    DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ERROR|r: |cff42f5ad" .. msg[1] .. " " .. msg[2] .. "|r")
+    DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ERROR|r: |cff42f5ad" .. msg[3] .. " " .. msg[4] .. "|r")
+    DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ERROR|r: |cff42f5ad" .. msg[5] .. " " .. msg[6] .. "|r")
+    DEFAULT_CHAT_FRAME:AddMessage("---------------------------------")
+end
+
+return GameVersionError
